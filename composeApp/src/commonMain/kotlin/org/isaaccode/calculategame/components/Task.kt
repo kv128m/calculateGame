@@ -14,6 +14,4 @@ data class Task(
     val answers: List<Int>,
     val correctAnswer: Int,
     val timestampShown: Long,
-) {
-
-}
+)

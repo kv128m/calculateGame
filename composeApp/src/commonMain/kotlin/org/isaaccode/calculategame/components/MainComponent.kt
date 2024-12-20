@@ -1,12 +1,11 @@
 package org.isaaccode.calculategame.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import org.isaaccode.calculategame.getResourceLoader
-import org.isaaccode.calculategame.resources.ResourceLoader
+import org.isaaccode.calculategame.resources.Theme.Companion.currentTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -14,10 +13,11 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun MainComponent(viewModel: TaskViewModel, navController: NavHostController) {
 
     Column(
-
+        modifier = Modifier
+            .background(currentTheme.colors.primaryBackgroundColor)
     ) {
         TaskComponent(viewModel, navController)
-        ScoresComponent(viewModel, navController)
+        ScoresComponent(viewModel)
     }
 
 }

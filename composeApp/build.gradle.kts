@@ -55,13 +55,6 @@ kotlin {
             api(libs.precompose.koin) // For Koin intergration
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.navigation.compose)
-            implementation(libs.kotlin.stdlib)
-
-        }
-        val iosSimulatorArm64Main by getting {
-            dependencies {
-               // implementation(libs.kotlinx.serialization.json.iossimulatorarm64)
-            }
         }
     }
 }

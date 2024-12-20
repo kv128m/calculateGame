@@ -9,7 +9,6 @@ class TaskViewModel(private val repo: SettingsRepository) : ViewModel() {
 
     val taskState = MutableStateFlow(generateTask())
 
-    //val resultsState = mutableStateOf(emptyList<Score>())
     val resultsState = MutableStateFlow(emptyList<Score>())
 
     private fun generateFirst(operand: Operand): Int {
@@ -34,7 +33,7 @@ class TaskViewModel(private val repo: SettingsRepository) : ViewModel() {
     private fun generateSecond(first: Int, operand: Operand): Int {
 
         val upperLimits = repo.state.value.upperLimits
-        println(upperLimits)
+
         return when(operand) {
             Operand.PLUS -> (0..(upperLimits[3].toInt() - first)).random()
             Operand.MINUS -> (0..first).random()
@@ -60,7 +59,6 @@ class TaskViewModel(private val repo: SettingsRepository) : ViewModel() {
     fun answerSelected(t: Task, selected: Int): List<Score> {
         save(t, selected)
         taskState.value = generateTask()
-        println("answerSelected()")
 
         return if (resultsState.value.size >= repo.state.value.numberOfTasks) {
             resultsState.value
@@ -85,9 +83,6 @@ class TaskViewModel(private val repo: SettingsRepository) : ViewModel() {
             deltaTime < difficulty.durationMinPoints * 1000 -> difficulty.pointsMin
             else -> 0
         }
-
-        println("$deltaTime  ${difficulty.pointsFull}  ${difficulty.pointsMedium} ${difficulty.pointsMin}")
-        println("$deltaTime  ${difficulty.durationFullPoints}  ${difficulty.durationMediumPoints} ${difficulty.durationMinPoints}")
 
         val newScore = Score(
                 previousState.size + 1,
@@ -160,5 +155,9 @@ class TaskViewModel(private val repo: SettingsRepository) : ViewModel() {
             Operand.MUL -> first * second
             Operand.DIV -> first / second
         }
+    }
+
+    fun newGame() {
+        resultsState.value = emptyList()
     }
 }

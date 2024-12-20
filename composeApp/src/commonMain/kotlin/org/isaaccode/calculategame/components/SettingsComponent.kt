@@ -1,14 +1,11 @@
 package org.isaaccode.calculategame
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Button
 import androidx.compose.material.Checkbox
 import androidx.compose.material.MaterialTheme
@@ -23,11 +20,23 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import org.isaaccode.calculategame.components.Operand
 import org.isaaccode.calculategame.data.model.Difficulty
 import org.isaaccode.calculategame.data.model.Settings
-import org.isaaccode.calculategame.resources.Theme.Companion.currentTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.isaaccode.calculategame.data.repository.SettingsRepository
+
+@Composable
+fun SettingsComponent(navController: NavHostController) {
+
+    val repo = SettingsRepository(getPersistenceAccessor())
+    val currentSettings: Settings = repo.state.value
+
+    SettingsScreen(currentSettings, {
+        settings -> repo.saveSettings(settings)
+        navController.popBackStack()
+    })
+}
 
 @Composable
 fun SettingsScreen(
@@ -186,18 +195,5 @@ fun NumberOfTasksSelector(numberOfTasks: Long, onNumberOfTasksChange: (Long) -> 
         )
         Text("Value: $numberOfTasks", style = MaterialTheme.typography.body2)
     }
-}
-
-@Composable
-fun PreviewSettingsScreen() {
-    SettingsScreen(
-        settings = Settings(
-            taskDifficulty = Difficulty.Medium,
-            operands = listOf(Operand.PLUS, Operand.MINUS),
-            upperLimits = listOf(50, 20),
-            numberOfTasks = 10
-        ),
-        onSettingsChange = {}
-    )
 }
 

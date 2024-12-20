@@ -5,7 +5,28 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.jetbrains.compose.resources.Font
+
+val md_theme_light_primary = Color(0xFF6200EE)
+val md_theme_light_onPrimary = Color(0xFFFFFFFF)
+val md_theme_light_primaryContainer = Color(0xFFBB86FC)
+val md_theme_light_onPrimaryContainer = Color(0xFF3700B3)
+
+val md_theme_light_secondary = Color(0x4003DAC6)
+val md_theme_light_onSecondary = Color(0xFF000000)
+
+val md_theme_light_background = Color(0xFFFFFFFF)
+val md_theme_light_onBackground = Color(0xFF000000)
+
+val md_theme_light_surface = Color(0xFFFFFFFF)
+val md_theme_light_onSurface = Color(0xFF000000)
+
+val md_theme_light_error = Color(0x40802020)
+val md_theme_light_onError = Color(0xFFFFFFFF)
+
+val md_theme_light_disabled = Color(0xFFB0B0B0)  // Disabled text (gray)
+val md_theme_light_disabledButton = Color(0xFFE0E0E0)  // Disabled button background
+val md_theme_light_disabledIcon = Color(0xFFB0B0B0)  // Disabled icons (gray)
+
 
 sealed class Theme(
     val colors: ThemeColors,
@@ -16,15 +37,15 @@ sealed class Theme(
 
     data object LightTheme : Theme(
         colors = ThemeColors(
-            primaryColor = Color(35, 116, 85),
-            secondaryColor = Color(0.2f, 0.36f, 0.50f),
-            primaryBackgroundColor = Colors.deepBlue,
-            secondaryBackgroundColor = Colors.yellow,
-            primaryFontColor = Color(24, 24, 24),
-            secondaryFontColor = Color(244, 244, 244),
-            accentColor = Colors.green,
-            warningColor = Colors.red,
-            inactiveColor = Colors.gray
+            primaryColor = md_theme_light_primary,
+            secondaryColor = md_theme_light_secondary,
+            primaryBackgroundColor = md_theme_light_background,
+            secondaryBackgroundColor = md_theme_light_onBackground,
+            primaryFontColor = md_theme_light_onBackground,
+            secondaryFontColor = md_theme_light_onSurface,
+            accentColor = md_theme_light_secondary,
+            warningColor = md_theme_light_error,
+            inactiveColor = md_theme_light_disabled
         ),
         fontSizes = ThemeFontSizes(
             title = FontSizes.extraLarge,

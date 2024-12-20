@@ -1,23 +1,14 @@
 package org.isaaccode.calculategame.components
 
-import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
-import org.isaaccode.calculategame.SettingsScreen
-import org.isaaccode.calculategame.data.model.Settings
-import org.isaaccode.calculategame.data.repository.SettingsRepository
-import org.isaaccode.calculategame.getPersistenceAccessor
+import org.isaaccode.calculategame.SettingsComponent
 
 @Composable
 fun AppNavigation(taskViewModel: TaskViewModel, navController: NavHostController) {
@@ -26,29 +17,44 @@ fun AppNavigation(taskViewModel: TaskViewModel, navController: NavHostController
 
     NavHost(
         navController = navController,
-        startDestination = "home",
+        startDestination = NavigationItem.MainMenu.route,
         modifier = Modifier
             .fillMaxSize()
     ) {
-        composable("home") {
-            val repo = SettingsRepository(getPersistenceAccessor())
+        composable(NavigationItem.MainMenu.route) {
+            MainMenuComponent(navController)
+        }
 
-
+        composable(NavigationItem.Home.route) {
             MainComponent(taskViewModel, navController)
         }
 
-        composable("settings") {
-
-            val repo = SettingsRepository(getPersistenceAccessor())
-            val currentSettings: Settings = repo.state.value
-
-            SettingsScreen(currentSettings, { settings -> repo.saveSettings(settings)
-            navController.navigate("home")})
+        composable(NavigationItem.Settings.route) {
+            SettingsComponent(navController)
         }
 
-        composable("result") {
-
+        composable(NavigationItem.Results.route) {
             ResultComponent(taskViewModel, navController)
         }
+
+        composable(NavigationItem.About.route) {
+            AboutComponent(navController)
+        }
     }
+}
+
+enum class Routes {
+    MainMenu,
+    Home,
+    Settings,
+    Results,
+    About
+}
+
+sealed class NavigationItem(val route: String) {
+    object MainMenu: NavigationItem(Routes.MainMenu.name)
+    object Home: NavigationItem(Routes.Home.name)
+    object Settings: NavigationItem(Routes.Settings.name)
+    object Results: NavigationItem(Routes.Results.name)
+    object About: NavigationItem(Routes.About.name)
 }

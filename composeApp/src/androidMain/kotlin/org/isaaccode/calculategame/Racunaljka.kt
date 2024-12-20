@@ -3,7 +3,7 @@ package org.isaaccode.calculategame
 import android.app.Application
 import android.content.Context
 
-class CalculateApplication : Application() {
+class Racunaljka : Application() {
     companion object {
         lateinit var appContext: Context
             private set

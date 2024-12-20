@@ -5,6 +5,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -27,6 +33,15 @@ fun ResultComponent(viewModel: TaskViewModel, navController: NavHostController) 
             .fillMaxHeight()
             .background(currentTheme.colors.primaryBackgroundColor)
     ) {
+        TopAppBar(
+            title = { Text("Results") },
+            backgroundColor = currentTheme.colors.accentColor,
+            navigationIcon = { IconButton(
+                onClick = { navController.popBackStack() }
+            ) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+            }}
+        )
 
         LaunchedEffect(scoreList.size) {
             lazyColumnListState.animateScrollToItem(lazyColumnListState.layoutInfo.totalItemsCount)

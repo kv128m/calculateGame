@@ -1,9 +1,6 @@
 package org.isaaccode.calculategame
 
-import android.content.Context
 import android.os.Build
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import org.isaaccode.calculategame.persistence.PersistenceAccessor
 import org.isaaccode.calculategame.resources.ResourceLoader
 import org.isaaccode.calculategame.time.DateTimeProvider
@@ -15,7 +12,7 @@ class AndroidPlatform : Platform {
 actual fun getPlatform(): Platform = AndroidPlatform()
 
 actual fun getPersistenceAccessor(): PersistenceAccessor {
-    return AndroidPersistenceAccessor(CalculateApplication.appContext.applicationContext)
+    return AndroidPersistenceAccessor(Racunaljka.appContext.applicationContext)
 }
 
 actual fun getDateTimeProvider(): DateTimeProvider {
@@ -23,7 +20,7 @@ actual fun getDateTimeProvider(): DateTimeProvider {
 }
 
 actual fun getResourceLoader(): ResourceLoader {
-    return AndroidResourceLoader(CalculateApplication.appContext.applicationContext)
+    return AndroidResourceLoader(Racunaljka.appContext.applicationContext)
 }
 
 

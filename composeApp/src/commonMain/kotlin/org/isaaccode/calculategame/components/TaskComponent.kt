@@ -1,14 +1,14 @@
 package org.isaaccode.calculategame.components
 
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,8 +18,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -39,7 +45,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.delay
+import org.isaaccode.calculategame.data.repository.SettingsRepository
 import org.isaaccode.calculategame.getDateTimeProvider
+import org.isaaccode.calculategame.getPersistenceAccessor
 import org.isaaccode.calculategame.resources.Theme.Companion.currentTheme
 
 enum class ButtonState { Pressed, Idle }
@@ -70,7 +78,6 @@ fun Modifier.bounceClick() = composed {
         }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TaskComponent(taskViewModel: TaskViewModel, navController: NavHostController) {
 
@@ -78,14 +85,12 @@ fun TaskComponent(taskViewModel: TaskViewModel, navController: NavHostController
 
     fun Task.forPrint() = "$first  ${operand.operand}  $second  =  ?"
 
-    val taskDurationInSeconds = 10
+    val taskDurationInSeconds = SettingsRepository(getPersistenceAccessor()).state.value.taskDifficulty.durationNoPoints
     var progress by remember { mutableStateOf(0f) }
 
-    // Track start time
-    val startTime = remember { getDateTimeProvider().now() }
-
     // LaunchedEffect will monitor the task progress based on system time
-    LaunchedEffect(startTime) {
+    LaunchedEffect(task) {
+        val startTime = getDateTimeProvider().now()
         // The task should take `taskDurationInSeconds` seconds.
         val taskEndTime = startTime + taskDurationInSeconds * 1000L
         while (getDateTimeProvider().now() < taskEndTime) {
@@ -96,6 +101,21 @@ fun TaskComponent(taskViewModel: TaskViewModel, navController: NavHostController
         // Mark the task as complete when the duration is over
         progress = 1f
     }
+
+    TopAppBar(
+        title = { Text("Task") },
+        backgroundColor = currentTheme.colors.accentColor,
+        navigationIcon = {
+            IconButton( onClick = { navController.popBackStack() }) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+            }
+        },
+        actions = {
+            IconButton( onClick = { taskViewModel.newGame() }) {
+                Icon(Icons.Filled.Add, contentDescription = null)
+            }
+        }
+    )
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -112,38 +132,27 @@ fun TaskComponent(taskViewModel: TaskViewModel, navController: NavHostController
             verticalAlignment = Alignment.CenterVertically
 
         ) {
-            Button(
+            Box(
                 modifier = Modifier
                     .alpha(0f)
-                    .combinedClickable(
-                        onClick = {},
-                        onLongClick = { navController.navigate("settings")}
-                    )
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onLongPress = { navController.navigate(NavigationItem.Settings.route)}
+                        )
+                    }
                     .width(30.dp)
                     .height(30.dp)
-                    .background(currentTheme.colors.primaryBackgroundColor),
-                onClick = { navController.navigate("result")}
+                    .background(currentTheme.colors.primaryBackgroundColor)
             ) {}
             Text(
                 text = task.forPrint(),
-                color = Color.White,
                 fontSize = currentTheme.fontSizes.title,
                 fontFamily = FontFamily.Serif,
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
                 textAlign = TextAlign.Center
             )
         }
-        /*
-        Text(
-            text = task.forPrint(),
-            color = Color.White,
-            fontSize = currentTheme.fontSizes.title,
-            fontFamily = FontFamily.Serif,
-            modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
-            textAlign = TextAlign.Center
-        )
 
-         */
         Row(
             modifier = Modifier.padding(vertical = 20.dp)
         ) {
@@ -156,9 +165,8 @@ fun TaskComponent(taskViewModel: TaskViewModel, navController: NavHostController
                     onClick = {
                         val result = taskViewModel.answerSelected(task, answer)
                         if (result.any()) {
-                            navController.navigate("result")
+                            navController.navigate(NavigationItem.Results.route)
                         }
-                        println("btn clicked")
                     },
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.buttonColors(Color.DarkGray)
@@ -179,8 +187,7 @@ fun TaskComponent(taskViewModel: TaskViewModel, navController: NavHostController
                 .fillMaxWidth()
                 .padding(currentTheme.paddingSizes.tableCell)
                 .height(10.dp),
-            progress = (1.0f / (progress * 10.0f + 0.01f)),
-            backgroundColor = currentTheme.colors.inactiveColor,
+            progress = (1.0f - progress),
             color = if (progress > 0.5f) currentTheme.colors.warningColor else currentTheme.colors.accentColor
         )
     }
