@@ -45,9 +45,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.delay
-import org.isaaccode.calculategame.data.repository.SettingsRepository
 import org.isaaccode.calculategame.getDateTimeProvider
-import org.isaaccode.calculategame.getPersistenceAccessor
 import org.isaaccode.calculategame.resources.Theme.Companion.currentTheme
 
 enum class ButtonState { Pressed, Idle }
@@ -85,25 +83,22 @@ fun TaskComponent(taskViewModel: TaskViewModel, navController: NavHostController
 
     fun Task.forPrint() = "$first  ${operand.operand}  $second  =  ?"
 
-    val taskDurationInSeconds = SettingsRepository(getPersistenceAccessor()).state.value.taskDifficulty.durationNoPoints
+    val taskDurationInSeconds = taskViewModel.getDifficulty().durationNoPoints
     var progress by remember { mutableStateOf(0f) }
 
-    // LaunchedEffect will monitor the task progress based on system time
     LaunchedEffect(task) {
         val startTime = getDateTimeProvider().now()
-        // The task should take `taskDurationInSeconds` seconds.
         val taskEndTime = startTime + taskDurationInSeconds * 1000L
         while (getDateTimeProvider().now() < taskEndTime) {
             val elapsedTime = getDateTimeProvider().now() - startTime
-            progress = elapsedTime.toFloat() / (taskDurationInSeconds * 1000) // Progress as a percentage (0-1)
-            delay(10)  // Wait for 1 second before updating progress
+            progress = elapsedTime.toFloat() / (taskDurationInSeconds * 1000)
+            delay(10)
         }
-        // Mark the task as complete when the duration is over
         progress = 1f
     }
 
     TopAppBar(
-        title = { Text("Task") },
+        title = { Text("Zadatak") },
         backgroundColor = currentTheme.colors.accentColor,
         navigationIcon = {
             IconButton( onClick = { navController.popBackStack() }) {
@@ -163,8 +158,8 @@ fun TaskComponent(taskViewModel: TaskViewModel, navController: NavHostController
                         .background(Color(143, 206, 0))
                         .bounceClick(),
                     onClick = {
-                        val result = taskViewModel.answerSelected(task, answer)
-                        if (result.any()) {
+                        val resultsLimit = taskViewModel.answerSelected(task, answer)
+                        if (resultsLimit.any()) {
                             navController.navigate(NavigationItem.Results.route)
                         }
                     },

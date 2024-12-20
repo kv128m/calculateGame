@@ -1,17 +1,24 @@
 package org.isaaccode.calculategame
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.Checkbox
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.RadioButton
 import androidx.compose.material.Slider
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,6 +32,7 @@ import org.isaaccode.calculategame.components.Operand
 import org.isaaccode.calculategame.data.model.Difficulty
 import org.isaaccode.calculategame.data.model.Settings
 import org.isaaccode.calculategame.data.repository.SettingsRepository
+import org.isaaccode.calculategame.resources.Theme.Companion.currentTheme
 
 @Composable
 fun SettingsComponent(navController: NavHostController) {
@@ -35,14 +43,15 @@ fun SettingsComponent(navController: NavHostController) {
     SettingsScreen(currentSettings, {
         settings -> repo.saveSettings(settings)
         navController.popBackStack()
-    })
+    }, Modifier, navController)
 }
 
 @Composable
 fun SettingsScreen(
     settings: Settings,
     onSettingsChange: (Settings) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navController: NavHostController
 ) {
     var taskDifficulty by remember { mutableStateOf(settings.taskDifficulty) }
     var selectedOperands by remember { mutableStateOf(settings.operands.toSet()) }
@@ -61,7 +70,8 @@ fun SettingsScreen(
         onSave = {
             onSettingsChange(Settings(taskDifficulty, selectedOperands.toList(), upperLimits.reversed(), numberOfTasks))
         },
-        modifier = modifier
+        modifier = modifier,
+        navController
     )
 }
 
@@ -76,36 +86,59 @@ fun SettingsUI(
     numberOfTasks: Long,
     onNumberOfTasksChange: (Long) -> Unit,
     onSave: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navController: NavHostController
 ) {
-    Column(modifier = modifier.padding(16.dp)) {
-        // Task Difficulty
-        Text("Task Difficulty", style = MaterialTheme.typography.h6)
-        DifficultySelector(taskDifficulty, onTaskDifficultyChange)
 
-        Spacer(modifier = Modifier.height(16.dp))
+    Column(
+        modifier = Modifier
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
 
-        // Operand Selector
-        Text("Operands", style = MaterialTheme.typography.h6)
-        OperandSelector(selectedOperands, onOperandsChange)
+        TopAppBar(
+            title = { Text("Postavke") },
+            backgroundColor = currentTheme.colors.accentColor,
+            navigationIcon = {
+                IconButton(
+                    onClick = { navController.popBackStack() }
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                }
+            }
+        )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Column(modifier = modifier.padding(16.dp)) {
 
-        // Upper Limits Selector
-        Text("Upper Limits", style = MaterialTheme.typography.h6)
-        UpperLimitsSelector(upperLimits, onUpperLimitsChange)
+            // Task Difficulty
+            Text("Tezina zadatka", style = MaterialTheme.typography.h6)
+            DifficultySelector(taskDifficulty, onTaskDifficultyChange)
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        // Number of Tasks Selector
-        Text("Number of Tasks", style = MaterialTheme.typography.h6)
-        NumberOfTasksSelector(numberOfTasks, onNumberOfTasksChange)
+            // Operand Selector
+            Text("Operandi", style = MaterialTheme.typography.h6)
+            OperandSelector(selectedOperands, onOperandsChange)
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        // Save Button
-        Button(onClick = onSave, modifier = Modifier.align(Alignment.CenterHorizontally)) {
-            Text("Save Settings")
+            // Upper Limits Selector
+            Text("Limit brojeva", style = MaterialTheme.typography.h6)
+            UpperLimitsSelector(upperLimits, onUpperLimitsChange)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Number of Tasks Selector
+            Text("Broj zadataka", style = MaterialTheme.typography.h6)
+            NumberOfTasksSelector(numberOfTasks, onNumberOfTasksChange)
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Save Button
+            Button(onClick = onSave, modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                Text("Sacuvaj")
+            }
         }
     }
 }
@@ -132,6 +165,14 @@ fun DifficultySelector(selectedDifficulty: Difficulty, onDifficultyChange: (Diff
 fun OperandSelector(selectedOperands: Set<Operand>, onOperandsChange: (Set<Operand>) -> Unit) {
     Row {
         Operand.values().forEach { operand ->
+
+            val operandName = when(operand) {
+                Operand.PLUS -> "+"
+                Operand.MINUS -> "-"
+                Operand.MUL -> "*"
+                Operand.DIV -> "/"
+            }
+
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(
                     checked = selectedOperands.contains(operand),
@@ -144,7 +185,7 @@ fun OperandSelector(selectedOperands: Set<Operand>, onOperandsChange: (Set<Opera
                         onOperandsChange(updatedOperands)
                     }
                 )
-                Text(operand.name)
+                Text(operandName)
             }
         }
     }
@@ -165,27 +206,27 @@ fun UpperLimitsSelector(upperLimits: List<Long>, onUpperLimitsChange: (List<Long
 fun SliderWithLabel(index: Int, limit: Long, onValueChange: (Float) -> Unit) {
     Column(modifier = Modifier.fillMaxWidth()) {
         val operandName = when(index) {
-            0 -> "PLUS"
-            1 -> "MINUS"
-            2 -> "MUL"
-            3 -> "DIV"
-            else -> { "PLUS" }
+            0 -> "+"
+            1 -> "-"
+            2 -> "*"
+            3 -> "/"
+            else -> { "+" }
         }
-        Text("Upper limit for operand $operandName", style = MaterialTheme.typography.body1)
+        Text("Limit za operand $operandName", style = MaterialTheme.typography.body1)
         Slider(
             value = limit.toFloat(),
             onValueChange = onValueChange,
             valueRange = 0f..100f,
             modifier = Modifier.fillMaxWidth()
         )
-        Text("Value: $limit", style = MaterialTheme.typography.body2)
+        Text("Vrijednost: $limit", style = MaterialTheme.typography.body2)
     }
 }
 
 @Composable
 fun NumberOfTasksSelector(numberOfTasks: Long, onNumberOfTasksChange: (Long) -> Unit) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text("Number of Tasks", style = MaterialTheme.typography.body1)
+        Text("Broj zadataka", style = MaterialTheme.typography.body1)
         Slider(
             value = numberOfTasks.toFloat(),
             onValueChange = { onNumberOfTasksChange(it.toLong()) },
@@ -193,7 +234,7 @@ fun NumberOfTasksSelector(numberOfTasks: Long, onNumberOfTasksChange: (Long) -> 
             steps = 19,
             modifier = Modifier.fillMaxWidth()
         )
-        Text("Value: $numberOfTasks", style = MaterialTheme.typography.body2)
+        Text("Vrijednost: $numberOfTasks", style = MaterialTheme.typography.body2)
     }
 }
 

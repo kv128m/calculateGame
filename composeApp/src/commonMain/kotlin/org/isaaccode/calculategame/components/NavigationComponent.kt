@@ -9,6 +9,24 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import org.isaaccode.calculategame.SettingsComponent
+import org.isaaccode.calculategame.data.repository.SettingsRepository
+import org.isaaccode.calculategame.getPersistenceAccessor
+
+enum class Routes {
+    MainMenu,
+    Home,
+    Settings,
+    Results,
+    About
+}
+
+sealed class NavigationItem(val route: String) {
+    object MainMenu: NavigationItem(Routes.MainMenu.name)
+    object Home: NavigationItem(Routes.Home.name)
+    object Settings: NavigationItem(Routes.Settings.name)
+    object Results: NavigationItem(Routes.Results.name)
+    object About: NavigationItem(Routes.About.name)
+}
 
 @Composable
 fun AppNavigation(taskViewModel: TaskViewModel, navController: NavHostController) {
@@ -26,6 +44,7 @@ fun AppNavigation(taskViewModel: TaskViewModel, navController: NavHostController
         }
 
         composable(NavigationItem.Home.route) {
+            taskViewModel.refreshRepository(SettingsRepository(getPersistenceAccessor()))
             MainComponent(taskViewModel, navController)
         }
 
@@ -41,20 +60,4 @@ fun AppNavigation(taskViewModel: TaskViewModel, navController: NavHostController
             AboutComponent(navController)
         }
     }
-}
-
-enum class Routes {
-    MainMenu,
-    Home,
-    Settings,
-    Results,
-    About
-}
-
-sealed class NavigationItem(val route: String) {
-    object MainMenu: NavigationItem(Routes.MainMenu.name)
-    object Home: NavigationItem(Routes.Home.name)
-    object Settings: NavigationItem(Routes.Settings.name)
-    object Results: NavigationItem(Routes.Results.name)
-    object About: NavigationItem(Routes.About.name)
 }

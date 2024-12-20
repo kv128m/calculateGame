@@ -34,7 +34,7 @@ fun ResultComponent(viewModel: TaskViewModel, navController: NavHostController) 
             .background(currentTheme.colors.primaryBackgroundColor)
     ) {
         TopAppBar(
-            title = { Text("Results") },
+            title = { Text("Rezultati") },
             backgroundColor = currentTheme.colors.accentColor,
             navigationIcon = { IconButton(
                 onClick = { navController.popBackStack() }

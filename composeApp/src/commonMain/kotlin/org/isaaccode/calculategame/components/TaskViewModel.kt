@@ -2,14 +2,26 @@ package org.isaaccode.calculategame.components
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import moe.tlaster.precompose.viewmodel.ViewModel
+import org.isaaccode.calculategame.data.model.Difficulty
 import org.isaaccode.calculategame.data.repository.SettingsRepository
 import org.isaaccode.calculategame.getDateTimeProvider
+import org.isaaccode.calculategame.getPersistenceAccessor
 
-class TaskViewModel(private val repo: SettingsRepository) : ViewModel() {
+class TaskViewModel(private var repo: SettingsRepository) : ViewModel() {
 
     val taskState = MutableStateFlow(generateTask())
 
     val resultsState = MutableStateFlow(emptyList<Score>())
+
+    fun getDifficulty(): Difficulty {
+        val difficulty = repo.state.value.taskDifficulty
+
+        return difficulty
+    }
+
+    fun refreshRepository(settingsRepository: SettingsRepository) {
+        repo = settingsRepository
+    }
 
     private fun generateFirst(operand: Operand): Int {
 

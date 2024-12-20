@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -32,7 +33,7 @@ fun AboutComponent(navController: NavHostController) {
     ) {
 
         TopAppBar(
-            title = { Text("Results") },
+            title = { Text("Info") },
             backgroundColor = currentTheme.colors.accentColor,
             navigationIcon = { IconButton(
                 onClick = { navController.popBackStack() }
@@ -57,21 +58,22 @@ fun AboutComponent(navController: NavHostController) {
 
             // App Version
             Text(
-                text = "Version 1.0.0",
+                text = "Verzija 1.0.0",
                 style = TextStyle(fontSize = 18.sp),
                 color = Color.Gray
             )
 
             // Description
             Text(
-                text = "This is a sample app built with Jetpack Compose Multiplatform. It allows users to experience a seamless cross-platform UI.",
+                text = "Aplikacija Racunaljka namjenjena za djecu ili odrasle koji zele da poboljsaju svoje matematicke sposobnosti kroz igru.",
                 style = TextStyle(fontSize = 20.sp),
-                color = Color.Black
+                color = Color.Black,
+                textAlign = TextAlign.Center
             )
 
             // Developer info or Social Media links
             Text(
-                text = "Developed by John Doe. Follow on Twitter @johndoe.",
+                text = "Developed by Isaac Code",
                 style = TextStyle(fontSize = 16.sp),
                 color = Color.Gray
             )

@@ -22,9 +22,9 @@ fun MainMenuComponent(navController: NavHostController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        MainMenuButton("Play", { navController.navigate(NavigationItem.Home.route)})
-        MainMenuButton("Settings", { navController.navigate(NavigationItem.Settings.route)})
-        MainMenuButton("About",{ navController.navigate(NavigationItem.About.route)})
+        MainMenuButton("Nova Igra", { navController.navigate(NavigationItem.Home.route)})
+        MainMenuButton("Postavke", { navController.navigate(NavigationItem.Settings.route)})
+        MainMenuButton("Info",{ navController.navigate(NavigationItem.About.route)})
     }
 }
 
